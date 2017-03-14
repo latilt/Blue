@@ -16,6 +16,35 @@ var ajax = {
 
 var news = {
 
+  clickBtn : function() {
+
+      var btns = document.querySelector(".btn");
+
+      var index;
+      btns.addEventListener("click", function(evt) {
+        var newsName = document.querySelector(".newsName").innerText;
+        var target = evt.target;
+        if(evt.target.tagName === "A") target = target.parentNode;
+        ajax.sending(newslist, function(res){
+          var json = JSON.parse(res.target.response);
+          for(var i = 0; i < json.length; i++){
+            if(newsName === json[i]["title"]){
+              if(target.className.includes("left")){
+                if(i === 0) index = json.length - 1;
+                else index = i - 1;
+                break;
+              }else if(target.className.includes("right")) {
+                if(i === json.length - 1) index = 0;
+                else index = i + 1;
+                break;
+              }
+            }
+          }
+          news.loadContent(json[index]);
+        });
+      });
+  },
+
   linkMainArea : function() {
 
     var mainArea = document.querySelector(".mainArea ul");
@@ -60,6 +89,11 @@ var news = {
       template = template.replace("{newsList}", "<li>" + json.newslist.join("</li><li>") + "</li>")
 
       content.innerHTML = template;
+
+      // var source = document.querySelector("#newsTemplate").innerHTML;
+      // var template = Handlebars.compile(source);
+      //
+      // content.innerHTML = template(json);
   },
 
   init : function() {
@@ -68,8 +102,10 @@ var news = {
       var json = JSON.parse(res.target.response);
       this.loadMainArea(json);
       this.loadContent(json[0]);
+
     }
 
     ajax.sending(newslist, load.bind(this));
+    this.clickBtn();
   }
 }
