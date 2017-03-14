@@ -16,7 +16,30 @@ var ajax = {
 
 var news = {
   index : 0,
-  listTotal : 0;
+  listTotal : 0,
+  data : null,
+
+  deleteBtn : function() {
+    var btn = document.querySelector(".content");
+
+    btn.addEventListener("click", function(evt) {
+      if(evt.target.tagName !== "A" && evt.target.tagName !== "BUTTON") return;
+
+      var target = evt.target.closest(".title").querySelector(".newsName").innerText;
+      var liList = document.querySelectorAll(".mainArea nav ul li");
+      liList.forEach(function(val, index) {
+        if(val.innerText === target) {
+          val.remove();
+          this.data.splice(index, 1);
+        }
+      }, this);
+
+      this.loadContent(this.data[0]);
+      this.changeCurrentNumber(1);
+      this.listTotal = this.listTotal - 1;
+      this.changeTotalNumber(this.listTotal);
+    }.bind(this));
+  },
 
   clickBtn : function() {
 
@@ -51,7 +74,7 @@ var news = {
 
   linkMainArea : function() {
 
-    var mainArea = document.querySelector(".mainArea ul");
+    var mainArea = document.querySelector(".mainArea nav ul");
     mainArea.addEventListener("click", function(evt) {
       if(evt.target.tagName !== "LI") return;
       ajax.sending(newslist, news.clickMainAreaLi.bind(evt.target));
@@ -67,7 +90,7 @@ var news = {
     }, this);
 
     news.index = target;
-    news.showPage(target+1);
+    news.changeCurrentNumber(target+1);
     news.loadContent(json[target]);
   },
 
@@ -78,8 +101,8 @@ var news = {
 
   changeTotalNumber : function(number) {
     var total = document.querySelector(".total");
-    toal.innerText = number;
-  }
+    total.innerText = number;
+  },
 
   loadMainArea : function(json) {
 
@@ -119,12 +142,14 @@ var news = {
       this.loadMainArea(json);
       this.loadContent(json[0]);
 
-      var total = document.querySelector(".total");
-      total.innerText = json.length;
+      this.changeTotalNumber(json.length);
       this.listTotal = json.length;
+
+      this.data = json;
     }
 
     ajax.sending(newslist, load.bind(this));
     this.clickBtn();
+    this.deleteBtn();
   }
 }
