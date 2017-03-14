@@ -16,6 +16,7 @@ var ajax = {
 
 var news = {
   index : 0,
+  listTotal : 0;
 
   clickBtn : function() {
 
@@ -29,13 +30,13 @@ var news = {
           var json = JSON.parse(res.target.response);
           if(target.classList.contains("left")) {
             if(this.index === 0) {
-              this.index = json.length-1;
+              this.index = this.listTotal-1;
             } else {
               this.index = this.index - 1;
             }
           }
           else if(target.classList.contains("right")) {
-            if(this.index === json.length-1) {
+            if(this.index === this.listTotal-1) {
               this.index = 0;
             } else {
               this.index = this.index + 1;
@@ -43,7 +44,7 @@ var news = {
           }
 
           this.loadContent(json[this.index]);
-          this.showPage(this.index+1);
+          this.changeCurrentNumber(this.index+1);
         }.bind(this));
       }.bind(this));
   },
@@ -70,10 +71,15 @@ var news = {
     news.loadContent(json[target]);
   },
 
-  showPage : function(number) {
+  changeCurrentNumber : function(number) {
     var current = document.querySelector(".current");
     current.innerText = number;
   },
+
+  changeTotalNumber : function(number) {
+    var total = document.querySelector(".total");
+    toal.innerText = number;
+  }
 
   loadMainArea : function(json) {
 
@@ -115,6 +121,7 @@ var news = {
 
       var total = document.querySelector(".total");
       total.innerText = json.length;
+      this.listTotal = json.length;
     }
 
     ajax.sending(newslist, load.bind(this));
