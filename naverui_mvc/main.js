@@ -15,34 +15,37 @@ var ajax = {
 }
 
 var news = {
+  index : 0,
 
   clickBtn : function() {
 
       var btns = document.querySelector(".btn");
 
-      var index;
       btns.addEventListener("click", function(evt) {
-        var newsName = document.querySelector(".newsName").innerText;
+
         var target = evt.target;
         if(evt.target.tagName === "A") target = target.parentNode;
         ajax.sending(newslist, function(res){
           var json = JSON.parse(res.target.response);
-          for(var i = 0; i < json.length; i++){
-            if(newsName === json[i]["title"]){
-              if(target.className.includes("left")){
-                if(i === 0) index = json.length - 1;
-                else index = i - 1;
-                break;
-              }else if(target.className.includes("right")) {
-                if(i === json.length - 1) index = 0;
-                else index = i + 1;
-                break;
-              }
+          if(target.classList.contains("left")) {
+            if(this.index === 0) {
+              this.index = json.length-1;
+            } else {
+              this.index = this.index - 1;
             }
           }
-          news.loadContent(json[index]);
-        });
-      });
+          else if(target.classList.contains("right")) {
+            if(this.index === json.length-1) {
+              this.index = 0;
+            } else {
+              this.index = this.index + 1;
+            }
+          }
+
+          this.loadContent(json[this.index]);
+          this.showPage(this.index+1);
+        }.bind(this));
+      }.bind(this));
   },
 
   linkMainArea : function() {
@@ -58,11 +61,18 @@ var news = {
 
     var json = JSON.parse(res.target.response);
 
-    var target = json.find(function(val) {
+    var target = json.findIndex(function(val) {
       return val.title === this.innerText;
     }, this);
 
-    news.loadContent(target);
+    news.index = target;
+    news.showPage(target+1);
+    news.loadContent(json[target]);
+  },
+
+  showPage : function(number) {
+    var current = document.querySelector(".current");
+    current.innerText = number;
   },
 
   loadMainArea : function(json) {
@@ -103,6 +113,8 @@ var news = {
       this.loadMainArea(json);
       this.loadContent(json[0]);
 
+      var total = document.querySelector(".total");
+      total.innerText = json.length;
     }
 
     ajax.sending(newslist, load.bind(this));
