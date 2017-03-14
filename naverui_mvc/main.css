@@ -35,6 +35,11 @@ header > .btn {
 	font-size: 1.2rem;
 }
 
+header > .paging {
+  float: right;
+  margin-right: 1rem;
+}
+
 .left, .right {
 	display: inline-block;
 }
