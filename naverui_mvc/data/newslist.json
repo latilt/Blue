@@ -19,5 +19,35 @@
       "dolor sit amet, consectetur adipisicin",
       "amet, consectetur adipisicin"
     ]
+  },
+  {
+    "title": "kbs",
+    "imgurl": "http://static.naver.net/newsstand/2017/0313/article_img/9054/173200/001.jpg",
+    "newslist": [
+      "Lorem ipsum dolor sit amet, consectetur adipisicin",
+      "ipsum dolor sit amet, consectetur adipisicin",
+      "dolor sit amet, consectetur adipisicin",
+      "amet, consectetur adipisicin"
+    ]
+  },
+  {
+    "title": "tvn",
+    "imgurl": "http://static.naver.net/newsstand/2017/0313/article_img/9054/173200/001.jpg",
+    "newslist": [
+      "Lorem ipsum dolor sit amet, consectetur adipisicin",
+      "ipsum dolor sit amet, consectetur adipisicin",
+      "dolor sit amet, consectetur adipisicin",
+      "amet, consectetur adipisicin"
+    ]
+  },
+  {
+    "title": "ytn",
+    "imgurl": "http://static.naver.net/newsstand/2017/0313/article_img/9054/173200/001.jpg",
+    "newslist": [
+      "Lorem ipsum dolor sit amet, consectetur adipisicin",
+      "ipsum dolor sit amet, consectetur adipisicin",
+      "dolor sit amet, consectetur adipisicin",
+      "amet, consectetur adipisicin"
+    ]
   }
 ]
