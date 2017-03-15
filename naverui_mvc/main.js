@@ -51,14 +51,14 @@ var news = {
         if(evt.target.tagName === "A") target = target.parentNode;
 
         if(target.classList.contains("left")) {
-          if(this.index === 0) {
+          if(this.index <= 0) {
             this.index = this.listTotal-1;
           } else {
             this.index = this.index - 1;
           }
         }
         else if(target.classList.contains("right")) {
-          if(this.index === this.listTotal-1) {
+          if(this.index >= this.listTotal-1) {
             this.index = 0;
           } else {
             this.index = this.index + 1;
