@@ -17,9 +17,8 @@ var ajax = {
 var news = {
   index : 0,
   listTotal : 0,
-  data : null,
 
-  deleteBtn : function() {
+  deleteBtn : function(json) {
     var btn = document.querySelector(".content");
 
     btn.addEventListener("click", function(evt) {
@@ -27,21 +26,22 @@ var news = {
 
       var target = evt.target.closest(".title").querySelector(".newsName").innerText;
       var liList = document.querySelectorAll(".mainArea nav ul li");
+
+      var targetIndex = 0;
       liList.forEach(function(val, index) {
         if(val.innerText === target) {
           val.remove();
-          this.data.splice(index, 1);
+          json.splice(index, 1);
         }
-      }, this);
-
-      this.loadContent(this.data[0]);
+      });
+      this.loadContent(json[0]);
       this.changeCurrentNumber(1);
       this.listTotal = this.listTotal - 1;
       this.changeTotalNumber(this.listTotal);
     }.bind(this));
   },
 
-  clickBtn : function() {
+  clickBtn : function(json) {
 
       var btns = document.querySelector(".btn");
 
@@ -49,49 +49,41 @@ var news = {
 
         var target = evt.target;
         if(evt.target.tagName === "A") target = target.parentNode;
-        ajax.sending(newslist, function(res){
-          var json = JSON.parse(res.target.response);
-          if(target.classList.contains("left")) {
-            if(this.index === 0) {
-              this.index = this.listTotal-1;
-            } else {
-              this.index = this.index - 1;
-            }
-          }
-          else if(target.classList.contains("right")) {
-            if(this.index === this.listTotal-1) {
-              this.index = 0;
-            } else {
-              this.index = this.index + 1;
-            }
-          }
 
-          this.loadContent(json[this.index]);
-          this.changeCurrentNumber(this.index+1);
-        }.bind(this));
+        if(target.classList.contains("left")) {
+          if(this.index === 0) {
+            this.index = this.listTotal-1;
+          } else {
+            this.index = this.index - 1;
+          }
+        }
+        else if(target.classList.contains("right")) {
+          if(this.index === this.listTotal-1) {
+            this.index = 0;
+          } else {
+            this.index = this.index + 1;
+          }
+        }
+
+        this.loadContent(json[this.index]);
+        this.changeCurrentNumber(this.index+1);
       }.bind(this));
   },
 
-  linkMainArea : function() {
+  linkMainArea : function(json) {
 
     var mainArea = document.querySelector(".mainArea nav ul");
     mainArea.addEventListener("click", function(evt) {
       if(evt.target.tagName !== "LI") return;
-      ajax.sending(newslist, news.clickMainAreaLi.bind(evt.target));
+
+      var target = json.findIndex(function(val) {
+        return val.title === evt.target.innerText;
+      });
+
+      news.index = target;
+      news.changeCurrentNumber(target+1);
+      news.loadContent(json[target]);
     });
-  },
-
-  clickMainAreaLi : function(res) {
-
-    var json = JSON.parse(res.target.response);
-
-    var target = json.findIndex(function(val) {
-      return val.title === this.innerText;
-    }, this);
-
-    news.index = target;
-    news.changeCurrentNumber(target+1);
-    news.loadContent(json[target]);
   },
 
   changeCurrentNumber : function(number) {
@@ -115,7 +107,7 @@ var news = {
     });
 
     mainArea.innerHTML = titleList;
-    this.linkMainArea();
+
   },
 
   loadContent : function(json) {
@@ -145,11 +137,12 @@ var news = {
       this.changeTotalNumber(json.length);
       this.listTotal = json.length;
 
-      this.data = json;
+      this.linkMainArea(json);
+      this.clickBtn(json);
+      this.deleteBtn(json);
     }
 
     ajax.sending(newslist, load.bind(this));
-    this.clickBtn();
-    this.deleteBtn();
+
   }
 }
