@@ -1,6 +1,7 @@
-#### scope
+### scope
 
 scope는 안에서 밖으로만 이동한다.
+
 자바스크립트는 함수단위의 scope이다. (블럭단위의 scope가 아니다)
 
 자바스크립트의 변수는 블럭 밖에서도 유효하다.
@@ -9,13 +10,12 @@ scope는 안에서 밖으로만 이동한다.
 (function home() {
 	var homeName = 'my house';
 	for(var i = 0; i < 1000; i++) {}
-	console.log(i);
+	console.log(i); // i = 1000
 })();
-// i = 1000
 ```
 
+### 자바스크립트의 호이스팅(hoisting)
 
-자바스크립트의 호이스팅(hoisting)
 자바스크립트는 선언된 변수를 맨위로 끌어올려서 사용한다.
 ```js
 (function home() {
@@ -36,7 +36,7 @@ scope는 안에서 밖으로만 이동한다.
 })();
 ```
 
-let : Block단위의 scope를 만드는 키워드 (ES6)
+#### let : Block단위의 scope를 만드는 키워드 (ES6)
 ```js
 (function home() {
 	var homeName = 'my house';
@@ -46,7 +46,7 @@ let : Block단위의 scope를 만드는 키워드 (ES6)
 })();
 ```
 
-const : 선언된 변수를 재정의 할 수 없게 하는 키워드
+#### const : 선언된 변수를 재정의 할 수 없게 하는 키워드
 배열과 오브젝트의 값을 변경하는 것은 가능하다.
 ```js
 (function home() {
@@ -57,11 +57,12 @@ const : 선언된 변수를 재정의 할 수 없게 하는 키워드
 
 ### closure
 실행이 끝난 함수의 변수를 콜백함수가 부모의 변수를 가지고 있으며 사용할수 있는 영역.
+
 자식은 부모의 값을 참조 하고 있기 때문에 어떤 경우의 수에 따라 바뀔수도 있다.
 closure는 scope의 한 영역이다.
 
 
-closure가 공유하는 변수를 특정하게 정의해서 쓰는 방법
+##### closure가 공유하는 변수를 특정하게 정의해서 쓰는 방법
 
 함수로 감싸 하나의 변수를 만들어 사용하는 경우
 ```js
@@ -94,9 +95,6 @@ let을 사용하는 방법
   }
 })();
 ```
-
-함수형 프로그래밍을 잘 하도록 하자
-
 
 ### 객체형 프로그래밍
 
@@ -141,8 +139,10 @@ Health.prototype.showHealth = function() {  // prototype 객체에 showHealth �
 }
 ```
 
-prototype 실습1
+#### prototype 실습1
+
 todolist 기능을 new 키워드와 prototype을 사용해 클래스로 만들어보자
+
 기능 : 추가, 보기, 완료(삭제)
 ```js
 function Todolist() {
@@ -167,7 +167,9 @@ Todolist.prototype.completeList = function(data) {
 ```
 
 Object.create() 를 쓰는 방법
+
 객체를 만들어서 객체를 생성하자.
+
 생성자가 없어서 직접 써줘야 한다.
 ```js
 var todoListObj = {
