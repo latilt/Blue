@@ -21,7 +21,7 @@ bind 첫 인자는 context, 그 다음부터 넘겨줄수 있는 매개변수들
 ```js
 arrowLeft.addEventListener("click", moveLR.bind(null, jsonObj, "L" ,currrentIdx));
 
-function moveLR(jsonObj, direction, idx){
+function moveLR(jsonObj, direction, idx){ // 이벤트의 이벤트 인자는 맨 마지막으로 들어간다. (..., evt)
     if(idx == jsonObj.length-1){
         if(direction == "R"){
             idx = 0;
