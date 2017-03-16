@@ -248,3 +248,46 @@ function todoList() {
 var myList = todoList();
 Object.setPrototypeOf(myList, todoListObj);
 ```
+
+ES6 class를 사용하는 방법
+```js
+class Health {
+	constructor(name, lastTime) {
+		this.name = name;
+		this.lastTime = lastTime;
+    }
+
+	showHealth() {
+		console.log("오늘은 " + this.lastTime + "까지 " + this.name + " 하셨습니다.");
+    }
+}
+
+var myHealth = new Health("달리기", "23:11");
+myHealth.showHealth();
+```
+
+```js
+class todoList {
+	constructor() {
+		this.list = [];
+	}
+
+	addList(data) {
+		this.list.push(data);
+	}
+
+	showList() {
+		return this.list;
+	}
+
+	completeList(data) {
+		this.list.forEach(function(val, index, array) {
+  		if(val === data) {
+  			array.splice(index, 1);
+          }
+      });
+	}
+}
+
+var myList = new todoList();
+```
