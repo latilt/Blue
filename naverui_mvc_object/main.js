@@ -1,148 +1,162 @@
-var newslist = "http://localhost:8000/data/newslist.json";
-
 document.addEventListener("DOMContentLoaded", function() {
-  news.init();
+  Controller();
 });
 
-var ajax = {
-  sending : function(url, func) {
+function Header() {
 
-    var res = new XMLHttpRequest();
-    res.addEventListener("load", func);
-    res.open("GET", url);
-    res.send();
+}
+
+Header.prototype = {
+  curPage : document.querySelector(".current"),
+  totalPage : document.querySelector(".total"),
+
+  changeCurrentPageNumber : function(currentInt) {
+    this.curPage.innerText = currentInt+1;
+  },
+
+  changeTotalPageNumber : function(totalInt) {
+    this.totalPage.innerText = totalInt;
   }
 }
 
-var news = {
-  index : 0,
-  listTotal : 0,
+function Nav() {
 
-  deleteBtn : function(json) {
-    var btn = document.querySelector(".content");
+}
 
-    btn.addEventListener("click", function(evt) {
-      if(evt.target.tagName !== "A" && evt.target.tagName !== "BUTTON") return;
+Nav.prototype = {
+  newsList : document.querySelector(".mainArea nav ul"),
 
-      var target = evt.target.closest(".title").querySelector(".newsName").innerText;
-      var liList = document.querySelectorAll(".mainArea nav ul li");
-
-      var targetIndex = 0;
-      liList.forEach(function(val, index) {
-        if(val.innerText === target) {
-          val.remove();
-          json.splice(index, 1);
-        }
-      });
-      this.loadContent(json[0]);
-      this.changeCurrentNumber(1);
-      this.listTotal = this.listTotal - 1;
-      this.changeTotalNumber(this.listTotal);
-    }.bind(this));
-  },
-
-  clickBtn : function(json) {
-
-      var btns = document.querySelector(".btn");
-
-      btns.addEventListener("click", function(evt) {
-
-        var target = evt.target;
-        if(evt.target.tagName === "A") target = target.parentNode;
-
-        if(target.classList.contains("left")) {
-          if(this.index <= 0) {
-            this.index = this.listTotal-1;
-          } else {
-            this.index = this.index - 1;
-          }
-        }
-        else if(target.classList.contains("right")) {
-          if(this.index >= this.listTotal-1) {
-            this.index = 0;
-          } else {
-            this.index = this.index + 1;
-          }
-        }
-
-        this.loadContent(json[this.index]);
-        this.changeCurrentNumber(this.index+1);
-      }.bind(this));
-  },
-
-  linkMainArea : function(json) {
-
-    var mainArea = document.querySelector(".mainArea nav ul");
-    mainArea.addEventListener("click", function(evt) {
-      if(evt.target.tagName !== "LI") return;
-
-      var target = json.findIndex(function(val) {
-        return val.title === evt.target.innerText;
-      });
-
-      news.index = target;
-      news.changeCurrentNumber(target+1);
-      news.loadContent(json[target]);
-    });
-  },
-
-  changeCurrentNumber : function(number) {
-    var current = document.querySelector(".current");
-    current.innerText = number;
-  },
-
-  changeTotalNumber : function(number) {
-    var total = document.querySelector(".total");
-    total.innerText = number;
-  },
-
-  loadMainArea : function(json) {
-
-    var mainArea = document.querySelector(".mainArea ul");
-
+  changeNewsList : function(titleArray) {
     var titleList = "";
 
-    json.forEach(function(val) {
-      titleList = titleList + "<li>" + val.title + "</li>";
+    titleArray.forEach(function(e) {
+      titleList = titleList + "<li>" + e + "</li>";
     });
 
-    mainArea.innerHTML = titleList;
+    this.newsList.innerHTML = titleList;
+  }
+}
 
-  },
+function Content() {
 
-  loadContent : function(json) {
+}
 
-      var content = document.querySelector(".content");
-      var template = document.querySelector("#newsTemplate").innerHTML;
+Content.prototype = {
+  content : document.querySelector(".content"),
+  template : document.querySelector("#newsTemplate").innerHTML,
 
-      template = template.replace("{title}", json.title);
-      template = template.replace("{imgurl}", json.imgurl);
-      template = template.replace("{newsList}", "<li>" + json.newslist.join("</li><li>") + "</li>")
+  changeNewsContent : function(newsObj) {
+    newContent = this.template.replace("{title}", newsObj.title).replace("{imgurl}", newsObj.imgurl).replace("{newsList}", "<li>" + newsObj.newslist.join("</li><li>") + "</li>");
 
-      content.innerHTML = template;
+    this.content.innerHTML = newContent;
+  }
+}
 
-      // var source = document.querySelector("#newsTemplate").innerHTML;
-      // var template = Handlebars.compile(source);
-      //
-      // content.innerHTML = template(json);
-  },
+function Controller() {
+  var myHeader = new Header();
+  var myNav = new Nav();
+  var myContent = new Content();
+  var myData = new Data();
 
-  init : function() {
+  var index = 0;
+  var length = 0;
 
-    function load(res) {
-      var json = JSON.parse(res.target.response);
-      this.loadMainArea(json);
-      this.loadContent(json[0]);
+  /* init */
+  ajax.sending(newsURL, function(res) {
+    var json = JSON.parse(res.target.response);
+    myData.setNewsData(json);
+    length = json.length;
 
-      this.changeTotalNumber(json.length);
-      this.listTotal = json.length;
+    myNav.changeNewsList(myData.getNewsTitleAll());
+    myContent.changeNewsContent(myData.getNewsObjByIndex(0));
+    myHeader.changeCurrentPageNumber(index);
+    myHeader.changeTotalPageNumber(length);
+  });
 
-      this.linkMainArea(json);
-      this.clickBtn(json);
-      this.deleteBtn(json);
+  var leftBtn = document.querySelector(".left > a");
+  leftBtn.addEventListener("click", function(evt){
+    index--;
+    if(index < 0) {
+      index = length-1;
     }
 
-    ajax.sending(newslist, load.bind(this));
+    myHeader.changeCurrentPageNumber(index);
+    myContent.changeNewsContent(myData.getNewsObjByIndex(index));
+  });
 
+  var rightBtn = document.querySelector(".right > a");
+  rightBtn.addEventListener("click", function(evt){
+    index++;
+    if(index >= length) {
+      index = 0;
+    }
+
+    myHeader.changeCurrentPageNumber(index);
+    myContent.changeNewsContent(myData.getNewsObjByIndex(index));
+  });
+
+  var listClick = document.querySelector(".mainArea nav ul");
+  listClick.addEventListener("click", function(evt){
+    if(evt.target.tagName !== "LI") return;
+
+    var newsDataIndex = myData.getNewsIndexByTitle(evt.target.innerText);
+    index = newsDataIndex;
+    myContent.changeNewsContent(myData.getNewsObjByIndex(newsDataIndex));
+    myHeader.changeCurrentPageNumber(newsDataIndex);
+  });
+
+  var deleteClick = document.querySelector(".content");
+  deleteClick.addEventListener("click", function(evt){
+    if(evt.target.tagName !== "BUTTON" && evt.target.tagName !== "A") return;
+
+    var newsDataTitle = evt.target.closest(".title").querySelector(".newsName").innerHTML;
+
+    myData.deleteNewsDataByTitle(newsDataTitle);
+    myNav.changeNewsList(myData.getNewsTitleAll());
+    myContent.changeNewsContent(myData.getNewsObjByIndex(0));
+
+    index = 0;
+    myHeader.changeCurrentPageNumber(index);
+    length--;
+    myHeader.changeTotalPageNumber(length);
+  });
+}
+
+function Data() {
+  this.newsData = [];
+}
+
+Data.prototype = {
+  setNewsData : function(json) {
+    this.newsData = JSON.parse(JSON.stringify(json));
+  },
+
+  getNewsObjByIndex : function(index) {
+    return this.newsData[index];
+  },
+
+  getNewsTitleAll : function() {
+    var titleArray = [];
+
+    this.newsData.forEach(function(e) {
+      titleArray.push(e.title);
+    });
+
+    return titleArray;
+  },
+
+  getNewsIndexByTitle : function(title) {
+    var findNewsIndex = this.newsData.findIndex(function(e) {
+      return e.title === title;
+    })
+    return findNewsIndex;
+  },
+
+  deleteNewsDataByTitle : function(deleteNewsTitle) {
+    this.newsData.forEach(function(e, i, a) {
+      if(e.title === deleteNewsTitle) {
+        a.splice(i, 1);
+      }
+    });
   }
 }
