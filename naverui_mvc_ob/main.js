@@ -90,16 +90,18 @@ function NewsView(model, elements) {
   });
 
   this._elements.header.querySelector(".left > a").addEventListener("click", function(evt) {
-
+    _this.leftButtonClicked.notify();
   });
   this._elements.header.querySelector(".right > a").addEventListener("click", function(evt) {
-
+    _this.rightButtonClicked.notify();
   });
   this._elements.nav.addEventListener("click", function(evt) {
-
+    if(evt.target.className !== "LI") return;
+    _this.listTitleClicked.notify({title : evt.target.innerText});
   });
   this._elements.content.addEventListener("click", function(evt) {
-
+    if(evt.target.className !== "BUTTON" && evt.target.className !== "A") return;
+    _this.delButtonClicked.notify({title : evt.target.closest(".title").querySelector(".newsName").innerText})
   });
 }
 
