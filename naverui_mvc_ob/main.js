@@ -46,12 +46,13 @@ NewsModel.prototype = {
     this.totalPageNumberChanged.notify({number : number});
   },
 
-  removeData : function(title) {
-    this._datas.forEach(function(e, i, a) {
-      if(e.title === title) {
-        a.splice(i, 1);
-      }
-    });
+  removeData : function(number) {
+    // this._datas.forEach(function(e, i, a) {
+    //   if(e.title === title) {
+    //     a.splice(i, 1);
+    //   }
+    // });
+    this._datas.splice(number, 1);
     this.dataRemoved.notify();
   },
 
@@ -116,7 +117,7 @@ function NewsView(model, elements) {
   });
 }
 
-NewsVeiw.prototype = {
+NewsView.prototype = {
   changeCurrentPageNumber : function(number) {
     this._elements.header.querySelector(".current").innerText = number + 1;
   },
@@ -136,7 +137,12 @@ NewsVeiw.prototype = {
     var newContent = this.template.replace("{title}", newsObj.title).replace("{imgurl}", newsObj.imgurl).replace("{newsList}", "<li>" + newsObj.newslist.join("</li><li>") + "</li>");
 
     this._elements.content.innerHTML = newContent;
-    }
+  },
+
+  init : function() {
+    this.changeNewsList();
+    this.changeNewsContent(0);
+  }
 }
 
 function NewsController(model, view) {
@@ -188,6 +194,24 @@ NewsController.prototype = {
   },
 
   clickDelButton : function() {
+    var targetPageNumber = this._model.getCurrentPageNumber();
 
+    this._model.removeData(targetPageNumber);
   }
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  var header = document.querySelector("header");
+  var nav = document.querySelector(".mainArea nav ul");
+  var content = document.querySelector(".content");
+
+  ajax.sending(newsURL, function(res) {
+    var json = JSON.parse(res.target.response);
+
+    var myModel = new NewsModel(json);
+    var myView = new NewsView(myModel, {header : header, nav : nav, content : content});
+    var myController = new NewsController(myModel, myView);
+
+    myView.init();
+  });
+});
