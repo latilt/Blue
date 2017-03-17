@@ -34,12 +34,12 @@ NewsModel.prototype = {
 
   setCurrentPageNumber : function(number) {
     this._currentPageNumber = number;
-    this.currentPageNumberChanged.notify();
+    this.currentPageNumberChanged.notify({number : number});
   },
 
   setTotalPageNumber : function(number) {
     this._totalPageNumber = number;
-    this.totalPageNumberChanged.notify();
+    this.totalPageNumberChanged.notify({number : number});
   },
 
   removeData : function(title) {
@@ -69,14 +69,43 @@ NewsModel.prototype = {
 function NewsView(model, elements) {
   this._model = model;
   this._elements = elements;
+  this.template = document.querySelector("#newsTemplate").innerHTML;
+
+  this.leftButtonClicked = new Event();
+  this.rightButtonClicked = new Event();
+  this.listTitleClicked = new Event();
+  this.delButtonClicked = new Event();
 
   var _this = this;
 
+  this._model.currentPageNumberChanged.attach(function(sender, args) {
 
+  });
+  this._model.totalPageNumberChanged.attach(function(sender, args) {
+
+  });
+  this._model.dataRemoved.attach(function() {
+
+  });
+
+  this._elements.header.querySelector(".left > a").addEventListener("click", function(evt) {
+
+  });
+  this._elements.header.querySelector(".right > a").addEventListener("click", function(evt) {
+
+  });
+  this._elements.nav.addEventListener("click", function(evt) {
+
+  });
+  this._elements.content.addEventListener("click", function(evt) {
+
+  });
 }
 
 NewsVeiw.prototype = {
+  changeCurrentPageNumber : function(number) {
 
+  }
 }
 
 function NewsController(model, view) {
