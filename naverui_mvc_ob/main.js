@@ -79,13 +79,14 @@ function NewsView(model, elements) {
   var _this = this;
 
   this._model.currentPageNumberChanged.attach(function(sender, args) {
-
+    _this.changeCurrentPageNumber(args.number);
   });
   this._model.totalPageNumberChanged.attach(function(sender, args) {
-
+    _this.changeTotalPageNumber(args.number);
   });
   this._model.dataRemoved.attach(function() {
-
+    _this.changeNewsList();
+    _this.changeNewsContent(0);
   });
 
   this._elements.header.querySelector(".left > a").addEventListener("click", function(evt) {
@@ -104,8 +105,25 @@ function NewsView(model, elements) {
 
 NewsVeiw.prototype = {
   changeCurrentPageNumber : function(number) {
+    this._elements.header.querySelector(".current").innerText = number;
+  },
 
-  }
+  changeTotalPageNumber : function(number) {
+    this._elements.header.querySelector(".total").innerText = number;
+  },
+
+  changeNewsList : function() {
+    var titleArray = this._model.getDataTitles();
+
+    this._elements.nav.innerHTML = "<li>" + titleArray.join("</li><li>") + "</li>";
+  },
+
+  changeNewsContent : function(number) {
+    var newsObj = this._model.getData(number);
+    var newContent = this.template.replace("{title}", newsObj.title).replace("{imgurl}", newsObj.imgurl).replace("{newsList}", "<li>" + newsObj.newslist.join("</li><li>") + "</li>");
+
+    this._elements.content.innerHTML = newContent;
+    }
 }
 
 function NewsController(model, view) {
