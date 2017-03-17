@@ -14,16 +14,15 @@ Event.prototype = {
             this._listeners[index](this._sender, args);
         }
     }
-};
+}
 
 function NewsModel(datas) {
   this._datas = datas;
   this._currentPageNumber = 0;
-  this._totalPageNumber = 0;
+  this._totalPageNumber = datas.length;
 
   this.currentPageNumberChanged = new Event(this);
   this.totalPageNumberChanged = new Event(this);
-  this.dataAdded = new Event(this);
   this.dataRemoved = new Event(this);
 }
 
@@ -34,7 +33,7 @@ NewsModel.prototype = {
 
   setCurrentPageNumber : function(number) {
     this._currentPageNumber = number;
-    this.currentPageNumberChanged.notify({number : number});
+    this.currentPageNumberChanged.notify();
   },
 
   getTotalPageNumber : function() {
@@ -43,16 +42,13 @@ NewsModel.prototype = {
 
   setTotalPageNumber : function(number) {
     this._totalPageNumber = number;
-    this.totalPageNumberChanged.notify({number : number});
+    this.totalPageNumberChanged.notify();
   },
 
   removeData : function(number) {
-    // this._datas.forEach(function(e, i, a) {
-    //   if(e.title === title) {
-    //     a.splice(i, 1);
-    //   }
-    // });
     this._datas.splice(number, 1);
+    this._currentPageNumber = 0;
+    this._totalPageNumber--;
     this.dataRemoved.notify();
   },
 
@@ -68,9 +64,11 @@ NewsModel.prototype = {
 
   getDataTitles : function() {
     var titleArray = [];
-    var val;
-    for( val in this._datas ) {
-      titleArray.push(val.title);
+    var key;
+    for( key in this._datas ) {
+      if(this._datas.hasOwnProperty(key)) {
+        titleArray.push(this._datas[key].title);
+      }
     }
 
     return titleArray;
@@ -89,16 +87,18 @@ function NewsView(model, elements) {
 
   var _this = this;
 
-  this._model.currentPageNumberChanged.attach(function(sender, args) {
-    _this.changeCurrentPageNumber(args.number);
-    _this.changeNewsContent(args.number);
+  this._model.currentPageNumberChanged.attach(function() {
+    _this.changeCurrentPageNumber();
+    _this.changeNewsContent();
   });
-  this._model.totalPageNumberChanged.attach(function(sender, args) {
-    _this.changeTotalPageNumber(args.number);
+  this._model.totalPageNumberChanged.attach(function() {
+    _this.changeTotalPageNumber();
   });
   this._model.dataRemoved.attach(function() {
     _this.changeNewsList();
-    _this.changeNewsContent(0);
+    _this.changeNewsContent();
+    _this.changeCurrentPageNumber();
+    _this.changeTotalPageNumber();
   });
 
   this._elements.header.querySelector(".left > a").addEventListener("click", function(evt) {
@@ -108,22 +108,24 @@ function NewsView(model, elements) {
     _this.rightButtonClicked.notify();
   });
   this._elements.nav.addEventListener("click", function(evt) {
-    if(evt.target.className !== "LI") return;
+    if(evt.target.tagName !== "LI") return;
     _this.listTitleClicked.notify({title : evt.target.innerText});
   });
   this._elements.content.addEventListener("click", function(evt) {
-    if(evt.target.className !== "BUTTON" && evt.target.className !== "A") return;
+    if(evt.target.tagName !== "BUTTON" && evt.target.tagName !== "A") return;
     _this.delButtonClicked.notify({title : evt.target.closest(".title").querySelector(".newsName").innerText})
   });
 }
 
 NewsView.prototype = {
-  changeCurrentPageNumber : function(number) {
-    this._elements.header.querySelector(".current").innerText = number + 1;
+  changeCurrentPageNumber : function() {
+    var currentPageNumber = this._model.getCurrentPageNumber();
+    this._elements.header.querySelector(".current").innerText = currentPageNumber + 1;
   },
 
-  changeTotalPageNumber : function(number) {
-    this._elements.header.querySelector(".total").innerText = number;
+  changeTotalPageNumber : function() {
+    var totalPageNumber = this._model.getTotalPageNumber();
+    this._elements.header.querySelector(".total").innerText = totalPageNumber;
   },
 
   changeNewsList : function() {
@@ -132,8 +134,9 @@ NewsView.prototype = {
     this._elements.nav.innerHTML = "<li>" + titleArray.join("</li><li>") + "</li>";
   },
 
-  changeNewsContent : function(number) {
-    var newsObj = this._model.getData(number);
+  changeNewsContent : function() {
+    var currentPageNumber = this._model.getCurrentPageNumber();
+    var newsObj = this._model.getData(currentPageNumber);
     var newContent = this.template.replace("{title}", newsObj.title).replace("{imgurl}", newsObj.imgurl).replace("{newsList}", "<li>" + newsObj.newslist.join("</li><li>") + "</li>");
 
     this._elements.content.innerHTML = newContent;
@@ -141,7 +144,9 @@ NewsView.prototype = {
 
   init : function() {
     this.changeNewsList();
-    this.changeNewsContent(0);
+    this.changeNewsContent();
+    this.changeCurrentPageNumber();
+    this.changeTotalPageNumber();
   }
 }
 
@@ -154,23 +159,24 @@ function NewsController(model, view) {
   this._view.leftButtonClicked.attach(function() {
     _this.clickLeftButton();
   });
-  this._view.rightButtonclicked.attach(function() {
+  this._view.rightButtonClicked.attach(function() {
     _this.clickRightButton();
   });
   this._view.listTitleClicked.attach(function(sender, args) {
     _this.clickListTitle(args.title);
   });
-  this._view.delButtonClicked.attach(function(sender, args) {
-    _this.clickDelButton(args.title);
+  this._view.delButtonClicked.attach(function() {
+    _this.clickDelButton();
   });
 }
 
 NewsController.prototype = {
   clickLeftButton : function() {
     var currentPageNumber = this._model.getCurrentPageNumber();
+    var totalPageNumber = this._model.getTotalPageNumber();
     currentPageNumber--;
     if(currentPageNumber < 0) {
-      currentPageNumber = this._model.getTotalPageNumber() - 1;
+      currentPageNumber = totalPageNumber - 1;
     }
 
     this._model.setCurrentPageNumber(currentPageNumber);
@@ -179,7 +185,7 @@ NewsController.prototype = {
   clickRightButton : function() {
     var currentPageNumber = this._model.getCurrentPageNumber();
     var totalPageNumber = this._model.getTotalPageNumber();
-    curretPageNumber++;
+    currentPageNumber++;
     if(currentPageNumber >= totalPageNumber) {
       currentPageNumber = 0;
     }
