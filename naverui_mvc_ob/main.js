@@ -22,7 +22,6 @@ function NewsModel(datas) {
   this._totalPageNumber = datas.length;
 
   this.currentPageNumberChanged = new Event(this);
-  this.totalPageNumberChanged = new Event(this);
   this.dataRemoved = new Event(this);
 }
 
@@ -38,11 +37,6 @@ NewsModel.prototype = {
 
   getTotalPageNumber : function() {
     return this._totalPageNumber;
-  },
-
-  setTotalPageNumber : function(number) {
-    this._totalPageNumber = number;
-    this.totalPageNumberChanged.notify();
   },
 
   removeData : function(number) {
@@ -90,9 +84,6 @@ function NewsView(model, elements) {
   this._model.currentPageNumberChanged.attach(function() {
     _this.changeCurrentPageNumber();
     _this.changeNewsContent();
-  });
-  this._model.totalPageNumberChanged.attach(function() {
-    _this.changeTotalPageNumber();
   });
   this._model.dataRemoved.attach(function() {
     _this.changeNewsList();
