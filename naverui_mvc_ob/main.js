@@ -37,6 +37,10 @@ NewsModel.prototype = {
     this.currentPageNumberChanged.notify({number : number});
   },
 
+  getTotalPageNumber : function() {
+    return this._totalPageNumber;
+  },
+
   setTotalPageNumber : function(number) {
     this._totalPageNumber = number;
     this.totalPageNumberChanged.notify({number : number});
@@ -53,6 +57,12 @@ NewsModel.prototype = {
 
   getData : function(number) {
     return this._datas[number];
+  },
+
+  getDataIndexByTitle : function(title) {
+    return this._datas.findIndex(function(e) {
+      return e.title === title;
+    });
   },
 
   getDataTitles : function() {
@@ -80,6 +90,7 @@ function NewsView(model, elements) {
 
   this._model.currentPageNumberChanged.attach(function(sender, args) {
     _this.changeCurrentPageNumber(args.number);
+    _this.changeNewsContent(args.number);
   });
   this._model.totalPageNumberChanged.attach(function(sender, args) {
     _this.changeTotalPageNumber(args.number);
@@ -107,7 +118,7 @@ function NewsView(model, elements) {
 
 NewsVeiw.prototype = {
   changeCurrentPageNumber : function(number) {
-    this._elements.header.querySelector(".current").innerText = number;
+    this._elements.header.querySelector(".current").innerText = number + 1;
   },
 
   changeTotalPageNumber : function(number) {
@@ -133,8 +144,50 @@ function NewsController(model, view) {
   this._view = view;
 
   var _this = this;
+
+  this._view.leftButtonClicked.attach(function() {
+    _this.clickLeftButton();
+  });
+  this._view.rightButtonclicked.attach(function() {
+    _this.clickRightButton();
+  });
+  this._view.listTitleClicked.attach(function(sender, args) {
+    _this.clickListTitle(args.title);
+  });
+  this._view.delButtonClicked.attach(function(sender, args) {
+    _this.clickDelButton(args.title);
+  });
 }
 
 NewsController.prototype = {
+  clickLeftButton : function() {
+    var currentPageNumber = this._model.getCurrentPageNumber();
+    currentPageNumber--;
+    if(currentPageNumber < 0) {
+      currentPageNumber = this._model.getTotalPageNumber() - 1;
+    }
 
+    this._model.setCurrentPageNumber(currentPageNumber);
+  },
+
+  clickRightButton : function() {
+    var currentPageNumber = this._model.getCurrentPageNumber();
+    var totalPageNumber = this._model.getTotalPageNumber();
+    curretPageNumber++;
+    if(currentPageNumber >= totalPageNumber) {
+      currentPageNumber = 0;
+    }
+
+    this._model.setCurrentPageNumber(currentPageNumber);
+  },
+
+  clickListTitle : function(title) {
+    var targetPageNumber = this._model.getDataIndexByTitle(title);
+
+    this._model.setCurrentPageNumber(targetPageNumber);
+  },
+
+  clickDelButton : function() {
+
+  }
 }
