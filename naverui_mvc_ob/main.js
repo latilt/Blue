@@ -74,10 +74,12 @@ function NewsView(model, elements) {
   this._elements = elements;
   this.template = document.querySelector("#newsTemplate").innerHTML;
 
-  this.leftButtonClicked = new Event();
-  this.rightButtonClicked = new Event();
-  this.listTitleClicked = new Event();
-  this.delButtonClicked = new Event();
+  this.leftButtonClicked = new Event(this);
+  this.rightButtonClicked = new Event(this);
+  this.pressButtonClicked = new Event(this);
+  this.myNewsButtonClicked = new Event(this);
+  this.listTitleClicked = new Event(this);
+  this.delButtonClicked = new Event(this);
 
   var _this = this;
 
@@ -92,16 +94,25 @@ function NewsView(model, elements) {
     _this.changeTotalPageNumber();
   });
 
+  // header eventlistener
   this._elements.header.querySelector(".left > a").addEventListener("click", function(evt) {
     _this.leftButtonClicked.notify();
   });
   this._elements.header.querySelector(".right > a").addEventListener("click", function(evt) {
     _this.rightButtonClicked.notify();
   });
+  this._elements.header.querySelector(".press").addEventListener("click", function(evt) {
+
+  });
+  this._elements.header.querySelector("myNews").addEventListener("click", function(evt) {
+
+  });
+  // nav eventlistener
   this._elements.nav.addEventListener("click", function(evt) {
     if(evt.target.tagName !== "LI") return;
     _this.listTitleClicked.notify({title : evt.target.innerText});
   });
+  // content eventlistener
   this._elements.content.addEventListener("click", function(evt) {
     if(evt.target.tagName !== "BUTTON" && evt.target.tagName !== "A") return;
     _this.delButtonClicked.notify({title : evt.target.closest(".title").querySelector(".newsName").innerText})
