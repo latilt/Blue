@@ -8,7 +8,8 @@
       "갤럭시S8' 출시? '갤노트7' 처리 계획부터 밝혀야",
       "블로코-삼성SDS, 블록체인 사업 '맞손",
       "[블록체인 톺아보기] 퍼블릭 블록체인의 한계와 프라이빗 블록체인"
-    ]
+    ],
+    "subscribed" : false
   },
   {
     "title": "mbc",
@@ -18,7 +19,8 @@
       "ipsum dolor sit amet, consectetur adipisicin",
       "dolor sit amet, consectetur adipisicin",
       "amet, consectetur adipisicin"
-    ]
+    ],
+    "subscribed" : false
   },
   {
     "title": "kbs",
@@ -28,7 +30,8 @@
       "ipsum dolor sit amet, consectetur adipisicin",
       "dolor sit amet, consectetur adipisicin",
       "amet, consectetur adipisicin"
-    ]
+    ],
+    "subscribed" : false
   },
   {
     "title": "mbn",
@@ -38,7 +41,8 @@
       "ipsum dolor sit amet, consectetur adipisicin",
       "dolor sit amet, consectetur adipisicin",
       "amet, consectetur adipisicin"
-    ]
+    ],
+    "subscribed" : false
   },
   {
     "title": "ytn",
@@ -48,6 +52,7 @@
       "ipsum dolor sit amet, consectetur adipisicin",
       "dolor sit amet, consectetur adipisicin",
       "amet, consectetur adipisicin"
-    ]
+    ],
+    "subscribed" : false
   }
 ]
