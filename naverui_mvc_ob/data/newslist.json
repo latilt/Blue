@@ -1,7 +1,7 @@
 [
   {
     "title": "sbs",
-    "imgurl": "http://static.naver.net/newsstand/2017/0313/article_img/9054/173200/001.jpg",
+    "imgurl": "http://img.naver.net/static/newsstand/up/2014/0715/055.gif",
     "newslist": [
       "[가보니] 가상 경주도 즐기고, 내 손으로 자동차도 만들고",
       "리캡차'가 사라진다",
@@ -12,7 +12,7 @@
   },
   {
     "title": "mbc",
-    "imgurl": "http://static.naver.net/newsstand/2017/0313/article_img/9054/173200/001.jpg",
+    "imgurl": "http://img.naver.net/static/newsstand/up/2014/0715/214.gif",
     "newslist": [
       "Lorem ipsum dolor sit amet, consectetur adipisicin",
       "ipsum dolor sit amet, consectetur adipisicin",
@@ -22,7 +22,7 @@
   },
   {
     "title": "kbs",
-    "imgurl": "http://static.naver.net/newsstand/2017/0313/article_img/9054/173200/001.jpg",
+    "imgurl": "http://img.naver.net/static/newsstand/up/2014/0715/056.gif",
     "newslist": [
       "Lorem ipsum dolor sit amet, consectetur adipisicin",
       "ipsum dolor sit amet, consectetur adipisicin",
@@ -31,8 +31,8 @@
     ]
   },
   {
-    "title": "tvn",
-    "imgurl": "http://static.naver.net/newsstand/2017/0313/article_img/9054/173200/001.jpg",
+    "title": "mbn",
+    "imgurl": "http://img.naver.net/static/newsstand/up/2015/0424/nsd163650137.gif",
     "newslist": [
       "Lorem ipsum dolor sit amet, consectetur adipisicin",
       "ipsum dolor sit amet, consectetur adipisicin",
@@ -42,7 +42,7 @@
   },
   {
     "title": "ytn",
-    "imgurl": "http://static.naver.net/newsstand/2017/0313/article_img/9054/173200/001.jpg",
+    "imgurl": "http://img.naver.net/static/newsstand/up/2015/1112/nsd184430988.jpg",
     "newslist": [
       "Lorem ipsum dolor sit amet, consectetur adipisicin",
       "ipsum dolor sit amet, consectetur adipisicin",
