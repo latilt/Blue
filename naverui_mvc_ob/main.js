@@ -18,11 +18,13 @@ Event.prototype = {
 
 function NewsModel(datas) {
   this._datas = datas;
+  this._subscribedList = [];
   this._currentPageNumber = 0;
-  this._totalPageNumber = datas.length;
+  this._totalPageNumber = 0;
 
   this.currentPageNumberChanged = new Event(this);
   this.dataRemoved = new Event(this);
+  this.subscribedChanged = new Event(this);
 }
 
 NewsModel.prototype = {
@@ -39,19 +41,28 @@ NewsModel.prototype = {
     return this._totalPageNumber;
   },
 
+  setTotalPageNumber : function() {
+    this._totalPageNumber = this._subscribedList.length;
+  },
+
   removeData : function(number) {
-    this._datas.splice(number, 1);
+    this.toggleSubscribedByTitle(this._subscribedList[number].title);
+    this._subscribedList.splice(number, 1);
     this._currentPageNumber = 0;
     this._totalPageNumber--;
     this.dataRemoved.notify();
   },
 
-  getData : function(number) {
-    return this._datas[number];
+  getDataAll : function() {
+    return this._datas;
+  },
+
+  getDataByNumber : function(number) {
+    return this._datas[this._subscribedList[number].index];
   },
 
   getDataIndexByTitle : function(title) {
-    return this._datas.findIndex(function(e) {
+    return this._subscribedList.findIndex(function(e) {
       return e.title === title;
     });
   },
@@ -59,13 +70,33 @@ NewsModel.prototype = {
   getDataTitles : function() {
     var titleArray = [];
     var key;
-    for( key in this._datas ) {
-      if(this._datas.hasOwnProperty(key)) {
-        titleArray.push(this._datas[key].title);
+    for( key in this._subscribedList ) {
+      if(this._subscribedList.hasOwnProperty(key)) {
+        titleArray.push(this._subscribedList[key].title);
       }
     }
 
     return titleArray;
+  },
+
+  toggleSubscribedByTitle : function(title) {
+    var targetObj = this._datas.find(function(e) {
+      return e.title === title;
+    });
+
+    targetObj.subscribed = (targetObj.subscribed) ? false : true;
+    this.subscribedChanged.notify({title : title});
+  },
+
+  setSubscribedList : function() {
+    this._subscribedList = [];
+    this._datas.forEach(function(e,i) {
+      if(e.subscribed) {
+        this._subscribedList.push({title : e.title, index : i});
+      }
+    }, this);
+
+    console.log(this._subscribedList);
   }
 }
 
@@ -80,6 +111,7 @@ function NewsView(model, elements) {
   this.myNewsButtonClicked = new Event(this);
   this.listTitleClicked = new Event(this);
   this.delButtonClicked = new Event(this);
+  this.pressListClicked = new Event(this);
 
   var _this = this;
 
@@ -93,6 +125,9 @@ function NewsView(model, elements) {
     _this.changeCurrentPageNumber();
     _this.changeTotalPageNumber();
   });
+  this._model.subscribedChanged.attach(function(sender, args) {
+    _this.togglePressSubscribed(args.title);
+  });
 
   // header eventlistener
   this._elements.header.querySelector(".left > a").addEventListener("click", function(evt) {
@@ -102,10 +137,10 @@ function NewsView(model, elements) {
     _this.rightButtonClicked.notify();
   });
   this._elements.header.querySelector(".press").addEventListener("click", function(evt) {
-
+    _this.pressButtonClicked.notify();
   });
-  this._elements.header.querySelector("myNews").addEventListener("click", function(evt) {
-
+  this._elements.header.querySelector(".myNews").addEventListener("click", function(evt) {
+    _this.myNewsButtonClicked.notify();
   });
   // nav eventlistener
   this._elements.nav.addEventListener("click", function(evt) {
@@ -117,6 +152,11 @@ function NewsView(model, elements) {
     if(evt.target.tagName !== "BUTTON" && evt.target.tagName !== "A") return;
     _this.delButtonClicked.notify({title : evt.target.closest(".title").querySelector(".newsName").innerText})
   });
+  // mainPress eventlistener
+  this._elements.mainPress.addEventListener("click", function(evt) {
+    if(evt.target.tagName !== "IMG") return;
+    _this.pressListClicked.notify({title : evt.target.id});
+  })
 }
 
 NewsView.prototype = {
@@ -130,6 +170,31 @@ NewsView.prototype = {
     this._elements.header.querySelector(".total").innerText = totalPageNumber;
   },
 
+  toggleMainPressDisplay : function(display) {
+    this._elements.mainPress.style.display = (display === "block") ? "block" : "none";
+  },
+
+  changeMainPress : function() {
+    var newsArray = this._model.getDataAll();
+    var pressList = "";
+
+    newsArray.forEach(function(e) {
+      pressList = pressList + "<li><img id='" + e.title + "' src='" + e.imgurl + "' style='border-color:" + ((e.subscribed) ? "red" : "black") + "'/></li>"
+    });
+
+    this._elements.mainPress.querySelector("ul").innerHTML = pressList;
+  },
+
+  togglePressSubscribed : function(title) {
+    var target = this._elements.mainPress.querySelector("#"+title);
+    var color = target.style.borderColor;
+    target.style.borderColor = (color === "red") ? "black" : "red";
+  },
+
+  toggleMainAreaDisplay : function(display) {
+    this._elements.mainArea.style.display = (display === "block") ? "block" : "none";
+  },
+
   changeNewsList : function() {
     var titleArray = this._model.getDataTitles();
 
@@ -138,17 +203,28 @@ NewsView.prototype = {
 
   changeNewsContent : function() {
     var currentPageNumber = this._model.getCurrentPageNumber();
-    var newsObj = this._model.getData(currentPageNumber);
+    var newsObj = this._model.getDataByNumber(currentPageNumber);
     var newContent = this.template.replace("{title}", newsObj.title).replace("{imgurl}", newsObj.imgurl).replace("{newsList}", "<li>" + newsObj.newslist.join("</li><li>") + "</li>");
 
     this._elements.content.innerHTML = newContent;
   },
 
+  togglePaging : function(display) {
+    this._elements.header.querySelector(".paging").style.display = (display === "block") ? "block" : "none";
+  },
+
+  toggleButton : function(display) {
+    this._elements.header.querySelector(".btn").style.display = (display === "block") ? "block" : "none";
+  },
+
   init : function() {
-    this.changeNewsList();
-    this.changeNewsContent();
-    this.changeCurrentPageNumber();
-    this.changeTotalPageNumber();
+    // this.changeNewsList();
+    // this.changeNewsContent();
+    // this.changeCurrentPageNumber();
+    // this.changeTotalPageNumber();
+    this._model.setSubscribedList();
+    this._model.setTotalPageNumber();
+    this.changeMainPress();
   }
 }
 
@@ -164,11 +240,20 @@ function NewsController(model, view) {
   this._view.rightButtonClicked.attach(function() {
     _this.clickRightButton();
   });
+  this._view.pressButtonClicked.attach(function() {
+    _this.clickPressButton();
+  });
+  this._view.myNewsButtonClicked.attach(function() {
+    _this.clickMyNewsButton();
+  });
   this._view.listTitleClicked.attach(function(sender, args) {
     _this.clickListTitle(args.title);
   });
   this._view.delButtonClicked.attach(function() {
     _this.clickDelButton();
+  });
+  this._view.pressListClicked.attach(function(sneder, args) {
+    _this.clickPressList(args.title);
   });
 }
 
@@ -195,6 +280,36 @@ NewsController.prototype = {
     this._model.setCurrentPageNumber(currentPageNumber);
   },
 
+  clickPressButton : function() {
+    this._view.toggleMainPressDisplay("block");
+    this._view.toggleMainAreaDisplay();
+    this._view.togglePaging();
+    this._view.toggleButton();
+    this._view.changeMainPress();
+  },
+
+  clickMyNewsButton : function() {
+
+    this._view.toggleMainPressDisplay();
+    this._view.toggleMainAreaDisplay("block");
+    this._view.togglePaging("block");
+    this._view.toggleButton("block");
+
+
+    this._model.setSubscribedList();
+    this._view.changeNewsList();
+
+
+    this._model.setTotalPageNumber();
+    this._view.changeTotalPageNumber();
+    var targetPageNumber = 0;
+    this._model.setCurrentPageNumber(targetPageNumber);
+  },
+
+  clickPressList : function(title) {
+    this._model.toggleSubscribedByTitle(title);
+  },
+
   clickListTitle : function(title) {
     var targetPageNumber = this._model.getDataIndexByTitle(title);
 
@@ -210,14 +325,17 @@ NewsController.prototype = {
 
 document.addEventListener("DOMContentLoaded", function() {
   var header = document.querySelector("header");
-  var nav = document.querySelector(".mainArea nav ul");
+  var mainArea = document.querySelector(".mainArea");
+  var mainPress = document.querySelector(".mainPress");
+  var nav = mainArea.querySelector("nav > ul");
   var content = document.querySelector(".content");
+
 
   ajax.sending(newsURL, function(res) {
     var json = JSON.parse(res.target.response);
 
     var myModel = new NewsModel(json);
-    var myView = new NewsView(myModel, {header : header, nav : nav, content : content});
+    var myView = new NewsView(myModel, {header : header, mainArea : mainArea, content : content, mainPress : mainPress, nav : nav});
     var myController = new NewsController(myModel, myView);
 
     myView.init();
