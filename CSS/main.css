@@ -1,0 +1,172 @@
+* {
+  outline: 1px solid red;
+}
+
+body,div,section,ul,li,h1,h2,h3,h4,h5,h6,header,nav,footer,p {
+  margin:0;
+  padding:0;
+}
+li {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+}
+
+body {
+  width: 100%;
+}
+
+.sideMenu {
+  float: left;
+  width: 319px;
+
+}
+
+.mainContent {
+  1float: right;
+  width: auto;
+  margin-left: 320px;
+}
+
+.content-main {
+  float:left;
+  width: 66.5%;
+}
+
+.content-main-header {
+  width: 100%;
+}
+
+.content-main-header > img {
+
+  width: 100%;
+}
+
+.content-main-left {
+  width: 50%;
+  float: left;
+}
+
+.content-main-right {
+  width: 50%;
+  float: right;
+}
+
+.content-service:hover {
+
+}
+
+.content-service-img {
+  padding : 34px;
+}
+
+.content-service-img > img {
+  width: 100%;
+}
+
+.content-people {
+  width: 100%;
+}
+
+.people-img {
+  width: 100%;
+}
+
+.people-img > img {
+  width: 100%;
+}
+
+.content-sub {
+  float:right;
+  width: 33.5%;
+}
+
+.sideMenu {
+   border-right: 1px solid #e5e5e5;
+   position: fixed;
+   top: 0;
+   left: 0;
+   height: 100%;
+   min-height: 650px;
+   background-color: #fff
+   /*z-index: 11;*/
+   /*width: 73px;*/
+}
+
+.content-main-left {
+  border-right: 1px solid #e5e5e5;
+  box-sizing: border-box;
+}
+
+.content-main-right {
+  border-right: 1px solid #e5e5e5;
+  box-sizing: border-box;
+}
+
+div.content-service .content-service-img {
+  -webkit-transition: all .2s ease-out;
+  -moz-transition: all .2s ease-out;
+  -ms-transition: all .2s ease-out;
+  -o-transition: all .2s ease-out;
+  transition: all .2s ease-out
+}
+
+div.content-service:hover {
+  background: #f2f2f2;
+}
+
+div.content-service:hover .content-service-img {
+  -webkit-transform:scale(1.1);
+  -ms-transform:scale(1.1);
+  -moz-transform:scale(1.1);
+  -o-transform:scale(1.1);
+  transform:scale(1.1);
+}
+
+div.content-service:hover .dontMove {
+  -webkit-transform:scale(1);
+  -ms-transform:scale(1);
+  -moz-transform:scale(1);
+  -o-transform:scale(1);
+  transform:scale(1);
+}
+
+.content-kakaostory {
+  position: relative;
+  overflow: hidden;
+}
+
+.content-kakaostory > img {
+  width: 100%;
+}
+
+.copy {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+
+
+}
+
+.catImage {
+
+}
+
+.content-kakaostory img.catImage {
+   display: block;
+   width: 100%;
+   -webkit-transition: all .2s ease-out;
+   -moz-transition: all .2s ease-out;
+   -ms-transition: all .2s ease-out;
+   -o-transition: all .2s ease-out;
+   transition: all .2s ease-out
+}
+
+.content-kakaostory:hover img.catImage {
+   -webkit-transform:scale(1.1);
+   -ms-transform:scale(1.1);
+   -moz-transform:scale(1.1);
+   -o-transform:scale(1.1);
+   transform:scale(1.1);
+}
